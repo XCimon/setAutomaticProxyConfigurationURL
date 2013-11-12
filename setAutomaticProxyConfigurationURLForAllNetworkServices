@@ -1,0 +1,69 @@
+#!/bin/sh
+####################################################################################################
+#
+# This is free and unencumbered software released into the public domain.
+# 
+# Anyone is free to copy, modify, publish, use, compile, sell, or
+# distribute this software, either in source code form or as a compiled
+# binary, for any purpose, commercial or non-commercial, and by any
+# means.
+# 
+# In jurisdictions that recognise copyright laws, the author or authors
+# of this software dedicate any and all copyright interest in the
+# software to the public domain. We make this dedication for the benefit
+# of the public at large and to the detriment of our heirs and
+# successors. We intend this dedication to be an overt act of
+# relinquishment in perpetuity of all present and future rights to this
+# software under copyright law.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# 
+# For more information, please refer to <http://unlicense.org/>
+#
+####################################################################################################
+#
+# More information: http://macmule.com/2011/09/09/how-to-change-the-automatic-proxy-configuration-url-in-system-preferences-via-a-script/
+#
+# GitRepo: https://github.com/macmule/setAutomaticProxyConfigurationURL
+#
+####################################################################################################
+
+# HARDCODED VALUES ARE SET HERE
+autoProxyURL=""
+
+# CHECK TO SEE IF A VALUE WAS PASSED FOR $4, AND IF SO, ASSIGN IT
+if [ "$4" != "" ] && [ "$autoProxyURL" == "" ]; then
+autoProxyURL=$4
+fi
+
+# Detects all network hardware & creates services for all installed network hardware
+/usr/sbin/networksetup -detectnewhardware
+
+IFS=$'\n'
+
+	#Loops through the list of network services
+	for i in $(networksetup -listallnetworkservices | tail +2 );
+	do
+	
+		# Get a list of all services
+		autoProxyURLLocal=`/usr/sbin/networksetup -getautoproxyurl "$i" | head -1 | cut -c 6-`
+		
+		# Echo's the name of any matching services & the autoproxyURL's set
+		echo "$i Proxy set to $autoProxyURLLocal"
+	
+		# If the value returned of $autoProxyURLLocal does not match the value of $autoProxyURL for the interface $i, change it.
+		if [[ $autoProxyURLLocal != $autoProxyURL ]]; then
+			networksetup -setautoproxyurl $i $autoProxyURL
+			echo "Set proxy for $i to $autoProxyURL"
+		fi
+	done
+
+echo "Proxies All Present And Correct..."
+
+unset IFS
