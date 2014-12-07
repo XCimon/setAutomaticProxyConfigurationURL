@@ -37,12 +37,17 @@ IFS=$'\n'
 			# If the value returned of $autoProxyURLLocal does not match the value of $autoProxyURL for the interface $i, change it.
 			if [[ $autoProxyURLLocal != $autoProxyURL ]]; then
 				networksetup -setautoproxyurl $i $autoProxyURL
-				echo "Set proxy for $i to $autoProxyURL"
-			fi
+					echo "Set auto proxy for $i to $autoProxyURL"
+				fi
 		fi
 		
-	done
+		# Enable auto proxy once set
+		sudo /usr/sbin/networksetup -setautoproxystate "$i" on
+		echo "Turned on auto proxy for $i" 
 	
-echo "Proxies All Present And Correct..."
+	done
 
 unset IFS
+
+# Echo that we're done
+echo "Auto proxy present, correct & enabled for all targeted interfaces"
