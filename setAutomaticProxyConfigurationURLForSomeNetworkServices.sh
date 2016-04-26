@@ -23,7 +23,7 @@ fi
 IFS=$'\n'
 
 	#Loops through the list of network services
-	for i in $(networksetup -listallnetworkservices | tail +2 );
+	for i in $(/usr/sbin/networksetup -listallnetworkservices | tail +2 );
 	do
 	
 		# Get a list of all services beginning 'Ether' 'Air' or 'VPN' or 'Wi-Fi'
